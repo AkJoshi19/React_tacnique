@@ -19,18 +19,55 @@ function WeatherDashboard() {
       windSpeed: "20 km/h",
     },
   };
+  const [searchTerm, setSearchTerm] = useState("");
+  const [weatherInfo, setWeatherInfo] = useState(null);
+  const [previousSearch, setPreviousSearch] = useState([]);
+
+  const searchCity = () =>{
+    const cityName = searchTerm.trim();
+    if (!cityName) return;
+
+    const wetherData = mockWeatherData[cityName];
+    if(wetherData){
+      setWeatherInfo(wetherData);
+      const previousSearchRecord = [...previousSearch, { cityName, ...wetherData }];
+      console.log(previousSearchRecord)
+      setPreviousSearch(previousSearchRecord);
+    }else{
+      // No Info
+      setWeatherInfo(null);
+    }
+
+  }
+
 
   return (
     <div>
-      <input type="text" id="citySearch" placeholder="Search for a city..." />
-      <button id="searchButton">Search</button>
-      <div id="weatherData">
-        <div>Temperature: </div>
-        <div>Humidity: </div>
-        <div>Wind Speed: </div>
-        <div>City not found.</div>
-      </div>
-      <div id="previousSearches"></div>
+      <input type="text" id="citySearch" placeholder="Search for a city..."
+      onChange={(e) => setSearchTerm(e.target.value)} />
+      <button id="searchButton" onClick={()=>{searchCity()}}>Search</button>
+      
+      {weatherInfo && <div id="weatherData">
+        
+        <div>Temperature: {weatherInfo.temperature} </div>
+        <div>Humidity: {weatherInfo.humidity}</div>
+        <div>Wind Speed:{weatherInfo.windSpeed} </div>
+        </div> }
+        {!weatherInfo && <div>City not found.</div>}
+        
+        <h3>Previous Searches:</h3>
+        {previousSearch.map((record, index) =>{
+       return  <>
+       <div key={index}>
+       
+        <button Click={()=>{
+          setSearchTerm(record.cityName)
+          searchCity();
+          }}>{record.cityName}</button>
+        </div>
+       </>
+})}
+      
     </div>
   );
 }
